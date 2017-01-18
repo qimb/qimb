@@ -1,0 +1,9 @@
+{
+  "name": "queueit.awsmessage-bus.framework.tests",
+  "version": "0.0.0",
+  "description": "Queueit.AWSMessageBus.Framework.Tests",
+  "main": "app.js",
+  "author": {
+    "name": "mala"
+  }
+}
