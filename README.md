@@ -1,7 +1,13 @@
 # qimb
 
 ## Delivery semantics
-![Application](https://raw.githubusercontent.com/qimb/qimb/master/doc/images/signature-application.png "Application")
+
+| Tables        | Icon          |
+| ------------- |:-------------:|
+| Application   | ![Application](https://raw.githubusercontent.com/qimb/qimb/master/doc/images/signature-application.png "Application") |
+
+
+ 
 ![AWS API Gateway](https://raw.githubusercontent.com/qimb/qimb/master/doc/images/signature-httprequest.png "HTTP Request")
 ![AWS API Gateway](https://raw.githubusercontent.com/qimb/qimb/master/doc/images/signature-apigateway.png "AWS API Gateway")
 ![AWS API Gateway](https://raw.githubusercontent.com/qimb/qimb/master/doc/images/signature-lambda.png "AWS Lambda")
