@@ -1,4 +1,15 @@
-# qimb
+# QIMB
+
+QIMB is a zero management, platform agnostic message bus. 
+
+* Serverless architecture powered 100% on AWS services such as SQS, SNS and Lambda (No software, database, queue to install)
+* Zero management (no servers or software to maintain)
+* Cross Platform (use it from windows, linux, mac, mobile, web-sockets in any programming language)
+* Publish/Subscribe pattern (multicast message without knowing subscribers)
+* Point-to-point message delivery (singlecast to known receiver)
+* Guarantied message delivery
+* Push delivery (using http hooks)
+* Pull delivery
 
 ## Delivery semantics
 
