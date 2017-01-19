@@ -2,9 +2,14 @@
 
 ## Delivery semantics
 
-| Tables        | Icon          |
-| ------------- |:-------------:|
-| Application   | ![Application](https://raw.githubusercontent.com/qimb/qimb/master/doc/images/signature-application.png "Application") |
+| Tables          | Icon          |
+| ----------------|:-------------:|
+| Application     | ![Application](https://raw.githubusercontent.com/qimb/qimb/master/doc/images/signature-application.png "Application") |
+| AWS API Gateway | ![AWS API Gateway](https://raw.githubusercontent.com/qimb/qimb/master/doc/images/signature-apigateway.png "AWS API Gateway") |
+| AWS Lambda      | ![AWS Lambda](https://raw.githubusercontent.com/qimb/qimb/master/doc/images/signature-lambda.png "AWS Lambda") |
+| AWS SNS         | ![AWS SNS](https://raw.githubusercontent.com/qimb/qimb/master/doc/images/signature-sns.png "AWS SNS") |
+| AWS SQS         | ![AWS SQS](https://raw.githubusercontent.com/qimb/qimb/master/doc/images/signature-sqs.png "AWS SQS") |
+
 
 
  
