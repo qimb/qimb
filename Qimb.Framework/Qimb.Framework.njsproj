@@ -51,9 +51,11 @@
     <TypeScriptCompile Include="Delete.ts" />
     <TypeScriptCompile Include="lib\dts\aws-sdk.d.ts" />
     <TypeScriptCompile Include="lib\dts\lambda.d.ts" />
+    <TypeScriptCompile Include="PublishDirect.ts" />
     <TypeScriptCompile Include="Publish.ts" />
     <TypeScriptCompile Include="Receive.ts" />
-    <TypeScriptCompile Include="subscribe.ts" />
+    <TypeScriptCompile Include="SubscribeDirect.ts" />
+    <TypeScriptCompile Include="Subscribe.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="lib\" />

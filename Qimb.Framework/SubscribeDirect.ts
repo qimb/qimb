@@ -8,8 +8,7 @@ import * as Lambda from 'aws-lambda';
 declare var exports: Lambda.Exports;
 
 exports.handler = async (event: any, context: Lambda.Context, callback: Lambda.Callback) => {
-    var request = new SubscribeRequest(event);
-
+    var request = new SubscribeDirectRequest(event);
     console.log("start");
 
     try {
@@ -32,15 +31,13 @@ interface QueueDetails {
     queueArn: string;
 }
 
-class SubscribeRequest {
-    private messageType: string;
+class SubscribeDirectRequest {
     private subscriberId: string;
     private pushEndpoint: string;
     private snsClient: AWS.SNS;
     private sqsClient: AWS.SQS;
 
     constructor(event: any) {
-        this.messageType = event.pathParameters.messagetype.toLowerCase();
         this.subscriberId = event.headers["X-Qimb-NodeId"].toLowerCase();
         var content = JSON.parse(event.body);
         this.pushEndpoint = content.pushEndpoint;
@@ -49,37 +46,29 @@ class SubscribeRequest {
     }
 
     public async execute() {
-        var messageTypeQueueName = "qimb-type-" + this.messageType;
         var subscriberQueueName = "qimb-sub-" + this.subscriberId;
-        var topicName = "qimb-type-" + this.messageType;
+        var topicName = "qimb-sub-" + this.subscriberId;
 
-        console.log("Message type queue name: " + messageTypeQueueName);
         console.log("Subscriber queue name: " + subscriberQueueName);
         console.log("Topic name: " + topicName);
 
-        var createMessageTypeQueuePromise = this.createQueue(messageTypeQueueName);
         var createSubscriberQueuePromise = this.createQueue(subscriberQueueName);
         var createTopicPromise = this.createTopic(topicName);
 
-        var messageTypeQueueDetails = await createMessageTypeQueuePromise;
         var subscriberQueueDetails = await createSubscriberQueuePromise;
         var topicArn = await createTopicPromise;
 
-        console.log("SQS queue created: " + messageTypeQueueDetails.queueUrl + ":" + messageTypeQueueDetails.queueArn);
         console.log("SQS queue created: " + subscriberQueueDetails.queueUrl + ":" + subscriberQueueDetails.queueArn);
         console.log("SNS topic created: " + topicArn);
 
-        var subscribeMessageTypeQueuePromise = this.subscribe(topicArn, messageTypeQueueDetails.queueArn, "sqs");
         var subscribeSubscriberQueuePromise = this.subscribe(topicArn, subscriberQueueDetails.queueArn, "sqs");
         if (this.pushEndpoint) {
             var pushNotificationSubscriptionArn = await this.subscribe(topicArn, this.pushEndpoint, "http");
             console.log("HTTP push subscribed to topic: " + pushNotificationSubscriptionArn);
         }
 
-        var messageTypeSubscriptionArn = await subscribeMessageTypeQueuePromise;
         var subscriberSubscriptionArn = await subscribeSubscriberQueuePromise;
 
-        console.log("SQS queue subscribed to topic: " + messageTypeSubscriptionArn);
         console.log("SQS queue subscribed to topic: " + subscriberSubscriptionArn);
     }
 
