@@ -41,9 +41,9 @@ QIMB is a zero management, platform agnostic message bus.
 
 ### Publish/Subscribe Unicast
 1. Subscribers subscribe Message Types to Buckets 
-..* e.g. Message Type "OrderCompleted" to Bucket "OrderDetails"
+⋅⋅* e.g. Message Type "OrderCompleted" to Bucket "OrderDetails"
 2. Publishers send messages to QiMB using the Message Type
-..* Publishers do not know the subscribers (or if there are any)
+⋅⋅* Publishers do not know the subscribers (or if there are any)
 3. Message gets delivered to **one** subscriber of the Bucket
 
 * If there are no subscribers when message is published, the message will eventually be delivered
@@ -55,7 +55,7 @@ QIMB is a zero management, platform agnostic message bus.
 ### Direct Message
 1. Subscribers subscribe to Direct Messages
 2. Publishers send messages to QiMB using the Node ID of the subscriber
-..* Publishers needs to know the subcriber
+⋅⋅* Publishers needs to know the subcriber
 3. Message gets delivered to the subscriber with the Node ID
 
 * If there are no subscribers when message is published, the message will eventually be delivered
