@@ -1,6 +1,6 @@
 ﻿declare module "aws-lambda" {
 
-    export  class Exports {
+    export class Exports {
         public handler: (event: IEvent, context: Context, callback: Callback) => void;
     }
 

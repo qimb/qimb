@@ -250,3 +250,8 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Package files
+*/package/*.js
+*/package/*.js.map
+*/package/CloudFormationTamplate.yml

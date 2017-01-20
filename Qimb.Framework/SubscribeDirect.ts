@@ -1,37 +1,14 @@
-﻿/// <reference path="lib/dts/lambda.d.ts" />
-/// <reference path="lib/dts/aws-sdk.d.ts" />
+﻿/// <reference path="lib/dts/aws-sdk.d.ts" />
 "use strict";
 
 import * as AWS from 'aws-sdk';
-import * as Lambda from 'aws-lambda';
 
-declare var exports: Lambda.Exports;
-
-exports.handler = async (event: any, context: Lambda.Context, callback: Lambda.Callback) => {
-    var request = new SubscribeDirectRequest(event);
-    console.log("start");
-
-    try {
-
-        await request.execute();
-
-
-        callback(null, { statusCode: 200 });
-    } catch (e) {
-        console.log("Exception: " + e);
-
-        callback({ statusCode: 500 }, null);
-    } 
-
-    console.log("end");
-}
-
-interface QueueDetails {
+interface IQueueDetails {
     queueUrl: string;
     queueArn: string;
 }
 
-class SubscribeDirectRequest {
+export class SubscribeDirectRequest {
     private subscriberId: string;
     private pushEndpoint: string;
     private snsClient: AWS.SNS;
@@ -58,7 +35,8 @@ class SubscribeDirectRequest {
         var subscriberQueueDetails = await createSubscriberQueuePromise;
         var topicArn = await createTopicPromise;
 
-        console.log("SQS queue created: " + subscriberQueueDetails.queueUrl + ":" + subscriberQueueDetails.queueArn);
+        console
+            .log("SQS queue created: " + subscriberQueueDetails.queueUrl + ":" + subscriberQueueDetails.queueArn);
         console.log("SNS topic created: " + topicArn);
 
         var subscribeSubscriberQueuePromise = this.subscribe(topicArn, subscriberQueueDetails.queueArn, "sqs");
@@ -85,7 +63,7 @@ class SubscribeDirectRequest {
         return subscribeResponse.SubscriptionArn;
     }
 
-    private async createTopic(topicName: string) : Promise<string> {
+    private async createTopic(topicName: string): Promise<string> {
         var createTopicResponse = await this.executeAwsRequestAsync<AWS.SNS.CreateTopicResult>((callback) =>
             this.snsClient.createTopic(
                 { Name: topicName },
@@ -94,24 +72,26 @@ class SubscribeDirectRequest {
         return createTopicResponse.TopicArn;
     }
 
-    private async createQueue(queueName: string) : Promise<QueueDetails> {
+    private async createQueue(queueName: string): Promise<IQueueDetails> {
         var createQueueResponse = await this.executeAwsRequestAsync<AWS.SQS.CreateQueueResult>((callback) =>
             this.sqsClient.createQueue(
                 {
                     QueueName: queueName,
                     Attributes: {
-                        Policy: '{"Version": "2012-10-17","Id": "SNSSendMessage","Statement": [{"Sid": "Allow-SNS-SendMessage","Effect": "Allow","Principal": "*","Action": ["sqs:SendMessage","SQS:ReceiveMessage","SQS:DeleteMessage"],"Resource": "arn:aws:*:*:*"}]}'
+                        Policy:
+                            '{"Version": "2012-10-17","Id": "SNSSendMessage","Statement": [{"Sid": "Allow-SNS-SendMessage","Effect": "Allow","Principal": "*","Action": ["sqs:SendMessage","SQS:ReceiveMessage","SQS:DeleteMessage"],"Resource": "arn:aws:*:*:*"}]}'
                     }
                 },
                 callback));
-        var queueAttributesResponse = await this.executeAwsRequestAsync<AWS.SQS.GetQueueAttributesResult>((callback) => {
-            this.sqsClient.getQueueAttributes(
-                {
-                    QueueUrl: createQueueResponse.QueueUrl,
-                    AttributeNames: ["All"]
-                },
-                callback);
-        });
+        var queueAttributesResponse = await this
+            .executeAwsRequestAsync<AWS.SQS.GetQueueAttributesResult>((callback) => {
+                this.sqsClient.getQueueAttributes(
+                    {
+                        QueueUrl: createQueueResponse.QueueUrl,
+                        AttributeNames: ["All"]
+                    },
+                    callback);
+            });
 
         return { queueArn: queueAttributesResponse.Attributes["QueueArn"], queueUrl: createQueueResponse.QueueUrl };
     }
@@ -120,15 +100,15 @@ class SubscribeDirectRequest {
         console.log("start request ");
 
         return new Promise<TResponse>(
-            (resolve, reject) => request((err, data) => {
-                if (!err) {
-                    console.log("success");
-                    resolve(data);
-                } else {
-                    console.log("error: " + err);
+        (resolve, reject) => request((err, data) => {
+            if (!err) {
+                console.log("success");
+                resolve(data);
+            } else {
+                console.log("error: " + err);
 
-                    reject(err);
-                }
-            }));
+                reject(err);
+            }
+        }));
     }
 }

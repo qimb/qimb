@@ -1,38 +1,14 @@
-﻿/// <reference path="lib/dts/lambda.d.ts" />
-/// <reference path="lib/dts/aws-sdk.d.ts" />
+﻿/// <reference path="lib/dts/aws-sdk.d.ts" />
 "use strict"
 
 import * as AWS from 'aws-sdk';
-import * as Lambda from 'aws-lambda';
 
-declare var exports: Lambda.Exports;
-
-exports.handler = async (event: any, context: Lambda.Context, callback: Lambda.Callback) => {
-    var request = new PublishDirectRequest(event);
-
-    console.log("start");
-    console.log("request: " + JSON.stringify(event));
-
-    try {
-
-        var snsMessageId = await request.execute();
-
-        callback(null, { statusCode: 201, body: JSON.stringify({ snsMessageId: snsMessageId })});
-    } catch (e) {
-        console.log("Exception: " + e);
-
-        callback({ statusCode: 500 }, null);
-    }
-
-    console.log("end");
-}
-
-interface QueueDetails {
+interface IQueueDetails {
     queueUrl: string;
     queueArn: string;
 }
 
-class PublishDirectRequest {
+export class PublishDirectRequest {
     private message: string;
     private messageId: string;
     private senderNodeId: string;
@@ -49,7 +25,7 @@ class PublishDirectRequest {
         this.sqsClient = new AWS.SQS();
     }
 
-    public async execute() : Promise<string> {
+    public async execute(): Promise<string> {
 
         var topicArn = "arn:aws:sns:eu-west-1:170643467817:qimb-sub-" + this.receiverNodeId;
 
@@ -57,7 +33,7 @@ class PublishDirectRequest {
         var messageId = null;
 
         try {
-            messageId = await this.publish(topicArn);           
+            messageId = await this.publish(topicArn);
         } catch (e) {
             if (e.name === "NotFound") {
                 var messageTypeQueueName = "qimb-sub-" + this.receiverNodeId;
@@ -72,7 +48,10 @@ class PublishDirectRequest {
                 var messageTypeQueueDetails = await createMessageTypeQueuePromise;
                 var topicArn = await createTopicPromise;
 
-                console.log("SQS queue created: " + messageTypeQueueDetails.queueUrl + ":" + messageTypeQueueDetails.queueArn);
+                console.log("SQS queue created: " +
+                    messageTypeQueueDetails.queueUrl +
+                    ":" +
+                    messageTypeQueueDetails.queueArn);
                 console.log("SNS topic created: " + topicArn);
 
                 var messageTypeSubscriptionArn = await this.subscribe(topicArn, messageTypeQueueDetails.queueArn);
@@ -85,14 +64,14 @@ class PublishDirectRequest {
                 console.log("exception type: " + e.constructor.name);
                 throw e;
             }
-        } 
+        }
 
         console.log("Published: " + messageId);
 
         return messageId;
     }
 
-    private async publish(topicArn: string) : Promise<string> {
+    private async publish(topicArn: string): Promise<string> {
         var publishResponse = await this.executeAwsRequestAsync<AWS.SNS.PublishResult>((callback) =>
             this.snsClient.publish(
                 {
@@ -117,24 +96,26 @@ class PublishDirectRequest {
         return createTopicResponse.TopicArn;
     }
 
-    private async createQueue(queueName: string): Promise<QueueDetails> {
+    private async createQueue(queueName: string): Promise<IQueueDetails> {
         var createQueueResponse = await this.executeAwsRequestAsync<AWS.SQS.CreateQueueResult>((callback) =>
             this.sqsClient.createQueue(
                 {
                     QueueName: queueName,
                     Attributes: {
-                        Policy: '{"Version": "2012-10-17","Id": "SNSSendMessage","Statement": [{"Sid": "Allow-SNS-SendMessage","Effect": "Allow","Principal": "*","Action": ["sqs:SendMessage","SQS:ReceiveMessage","SQS:DeleteMessage"],"Resource": "arn:aws:*:*:*"}]}'
+                        Policy:
+                            '{"Version": "2012-10-17","Id": "SNSSendMessage","Statement": [{"Sid": "Allow-SNS-SendMessage","Effect": "Allow","Principal": "*","Action": ["sqs:SendMessage","SQS:ReceiveMessage","SQS:DeleteMessage"],"Resource": "arn:aws:*:*:*"}]}'
                     }
                 },
                 callback));
-        var queueAttributesResponse = await this.executeAwsRequestAsync<AWS.SQS.GetQueueAttributesResult>((callback) => {
-            this.sqsClient.getQueueAttributes(
-                {
-                    QueueUrl: createQueueResponse.QueueUrl,
-                    AttributeNames: ["All"]
-                },
-                callback);
-        });
+        var queueAttributesResponse = await this
+            .executeAwsRequestAsync<AWS.SQS.GetQueueAttributesResult>((callback) => {
+                this.sqsClient.getQueueAttributes(
+                    {
+                        QueueUrl: createQueueResponse.QueueUrl,
+                        AttributeNames: ["All"]
+                    },
+                    callback);
+            });
 
         return { queueArn: queueAttributesResponse.Attributes["QueueArn"], queueUrl: createQueueResponse.QueueUrl };
     }
@@ -156,15 +137,15 @@ class PublishDirectRequest {
         console.log("start request ");
 
         return new Promise<TResponse>(
-            (resolve, reject) => request((err, data) => {
-                if (!err) {
-                    console.log("success");
-                    resolve(data);
-                } else {
-                    console.log("error: " + err);
+        (resolve, reject) => request((err, data) => {
+            if (!err) {
+                console.log("success");
+                resolve(data);
+            } else {
+                console.log("error: " + err);
 
-                    reject(err);
-                }
-            }));
+                reject(err);
+            }
+        }));
     }
 }

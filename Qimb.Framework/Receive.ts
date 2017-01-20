@@ -1,39 +1,16 @@
-﻿/// <reference path="lib/dts/lambda.d.ts" />
-/// <reference path="lib/dts/aws-sdk.d.ts" />
+﻿/// <reference path="lib/dts/aws-sdk.d.ts" />
 "use strict"
 
 import * as AWS from 'aws-sdk';
-import * as Lambda from 'aws-lambda';
 
-declare var exports: Lambda.Exports;
-
-exports.handler = async (event: any, context: Lambda.Context, callback: Lambda.Callback) => {
-    var request = new ReceiveRequest(event);
-
-    console.log("start");
-
-    try {
-
-        var messages = await request.execute();
-
-        callback(null, { statusCode: 200, body: JSON.stringify(messages) });
-    } catch (e) {
-        console.log("Exception: " + e);
-
-        callback({ statusCode: 500 }, null);
-    }
-
-    console.log("end");
-}
-
-class ReceiveRequest {
+export class ReceiveRequest {
     private subscriberId: string;
 
     constructor(event: any) {
         this.subscriberId = event.headers["X-Qimb-NodeId"];
     }
 
-    public async execute() : Promise<any> {
+    public async execute(): Promise<any> {
         var sqsClient = new AWS.SQS();
 
         var queueUrl = "https://sqs.eu-west-1.amazonaws.com/170643467817/qimb-sub-" + this.subscriberId;
@@ -78,15 +55,15 @@ class ReceiveRequest {
         console.log("start request ");
 
         return new Promise<TResponse>(
-            (resolve, reject) => request((err, data) => {
-                if (!err) {
-                    console.log("success");
-                    resolve(data);
-                } else {
-                    console.log("error: " + err);
+        (resolve, reject) => request((err, data) => {
+            if (!err) {
+                console.log("success");
+                resolve(data);
+            } else {
+                console.log("error: " + err);
 
-                    reject(err);
-                }
-            }));
+                reject(err);
+            }
+        }));
     }
 }
