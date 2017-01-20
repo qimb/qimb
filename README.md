@@ -70,4 +70,5 @@ QIMB is a zero management, platform agnostic message bus.
 ```
 aws cloudformation package --template-file app.yaml --output-template-file CloudFormationTamplate.yml --s3-bucket [s3-bucket] --profile [profile]
 ```
+3. Deploy the generated file `CloudFormationTamplate.yml` using CloudFormation
 
