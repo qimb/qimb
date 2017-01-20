@@ -65,10 +65,10 @@ QIMB is a zero management, platform agnostic message bus.
 ![Direct Message](https://raw.githubusercontent.com/qimb/qimb/master/doc/images/direct-message.png "Direct Message")
 
 ## Build deployment package with SAM
-1. Build the visual studio solution
-2. Open \Qimb.Framework\package in command line and use the AWS cli to build a deployment package
+* Build the visual studio solution
+* Open \Qimb.Framework\package in command line and use the AWS cli to build a deployment package
 ```
 aws cloudformation package --template-file app.yaml --output-template-file CloudFormationTamplate.yml --s3-bucket [s3-bucket] --profile [profile]
 ```
-3. Deploy the generated file `CloudFormationTamplate.yml` using CloudFormation
+*  Deploy the generated file `CloudFormationTamplate.yml` using CloudFormation
 
