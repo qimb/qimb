@@ -8,6 +8,9 @@ Resources:
       Handler: App.delete
       Timeout: 30
       Runtime: nodejs4.3
+      Environment:
+        Variables:
+          SQS_URL_PREFIX: !Sub "https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/"
       Events:
         PostResource:
           Type: Api
@@ -21,6 +24,9 @@ Resources:
       Handler: App.publishDirect
       Timeout: 30
       Runtime: nodejs4.3
+      Environment:
+        Variables:
+          SNS_ARN_PREFIX: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:"
       Events:
         PostResource:
           Type: Api
@@ -34,6 +40,9 @@ Resources:
       Handler: App.publish
       Timeout: 30
       Runtime: nodejs4.3
+      Environment:
+        Variables:
+          SNS_ARN_PREFIX: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:"
       Events:
         PostResource:
           Type: Api
@@ -47,6 +56,9 @@ Resources:
       Handler: App.receive
       Timeout: 30
       Runtime: nodejs4.3
+      Environment:
+        Variables:
+          SQS_URL_PREFIX: !Sub "https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/"
       Events:
         PostResource:
           Type: Api

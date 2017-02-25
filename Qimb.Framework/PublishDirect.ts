@@ -25,9 +25,9 @@ export class PublishDirectRequest {
         this.sqsClient = new AWS.SQS();
     }
 
-    public async execute(): Promise<string> {
+    public async execute(snsArnPrefix: string): Promise<string> {
 
-        var topicArn = "arn:aws:sns:eu-west-1:170643467817:qimb-sub-" + this.receiverNodeId;
+        var topicArn = snsArnPrefix + "qimb-sub-" + this.receiverNodeId;
 
         console.log("Topic Arn: " + topicArn);
         var messageId = null;
@@ -46,13 +46,13 @@ export class PublishDirectRequest {
                 var createTopicPromise = this.createTopic(topicName);
 
                 var messageTypeQueueDetails = await createMessageTypeQueuePromise;
-                var topicArn = await createTopicPromise;
+                var createTopicArn = await createTopicPromise;
 
                 console.log("SQS queue created: " +
                     messageTypeQueueDetails.queueUrl +
                     ":" +
                     messageTypeQueueDetails.queueArn);
-                console.log("SNS topic created: " + topicArn);
+                console.log("SNS topic created: " + createTopicArn);
 
                 var messageTypeSubscriptionArn = await this.subscribe(topicArn, messageTypeQueueDetails.queueArn);
 

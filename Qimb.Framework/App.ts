@@ -11,7 +11,14 @@ import * as SubscribeDirect from "./SubscribeDirect";
 import * as Subscribe from "./Subscribe";
 
 declare var exports: any;
+declare var process: any;
 
+var getSqsUrlPrefix = () => {
+    return process.env.SQS_URL_PREFIX;
+};
+var getSnsArnPrefix = () => {
+    return process.env.SNS_ARN_PREFIX;
+};
 exports.delete = async (event: any, context: Lambda.Context, callback: Lambda.Callback) => {
     var request = new Delete.DeleteRequest(event);
 
@@ -19,7 +26,7 @@ exports.delete = async (event: any, context: Lambda.Context, callback: Lambda.Ca
 
     try {
 
-        await request.execute();
+        await request.execute(getSqsUrlPrefix());
 
         callback(null, { statusCode: 200 });
     } catch (e) {
@@ -58,7 +65,7 @@ exports.publishDirect = async (event: any, context: Lambda.Context, callback: La
 
     try {
 
-        var snsMessageId = await request.execute();
+        var snsMessageId = await request.execute(getSnsArnPrefix());
 
         callback(null, { statusCode: 201, body: JSON.stringify({ snsMessageId: snsMessageId }) });
     } catch (e) {
@@ -78,7 +85,7 @@ exports.publish = async (event: any, context: Lambda.Context, callback: Lambda.C
 
     try {
 
-        var snsMessageId = await request.execute();
+        var snsMessageId = await request.execute(getSnsArnPrefix());
 
         callback(null, { statusCode: 201, body: JSON.stringify({ snsMessageId: snsMessageId }) });
     } catch (e) {
@@ -97,7 +104,7 @@ exports.receive = async (event: any, context: Lambda.Context, callback: Lambda.C
 
     try {
 
-        var messages = await request.execute();
+        var messages = await request.execute(getSqsUrlPrefix());
 
         callback(null, { statusCode: 200, body: JSON.stringify(messages) });
     } catch (e) {

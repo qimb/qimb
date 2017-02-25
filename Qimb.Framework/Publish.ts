@@ -25,9 +25,9 @@ export class PublishRequest {
         this.sqsClient = new AWS.SQS();
     }
 
-    public async execute(): Promise<string> {
+    public async execute(snsArnPrefix: string): Promise<string> {
 
-        var topicArn = "arn:aws:sns:eu-west-1:170643467817:qimb-type-" + this.messageType;
+        var topicArn = snsArnPrefix + "qimb-type-" + this.messageType;
 
         console.log("Topic Arn: " + topicArn);
         var messageId = null;
@@ -46,13 +46,13 @@ export class PublishRequest {
                 var createTopicPromise = this.createTopic(topicName);
 
                 var messageTypeQueueDetails = await createMessageTypeQueuePromise;
-                var topicArn = await createTopicPromise;
+                var createTopicArn = await createTopicPromise;
 
                 console.log("SQS queue created: " +
                     messageTypeQueueDetails.queueUrl +
                     ":" +
                     messageTypeQueueDetails.queueArn);
-                console.log("SNS topic created: " + topicArn);
+                console.log("SNS topic created: " + createTopicArn);
 
                 var messageTypeSubscriptionArn = await this.subscribe(topicArn, messageTypeQueueDetails.queueArn);
 

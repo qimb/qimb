@@ -12,10 +12,10 @@ export class DeleteRequest {
         this.receiptHandle = decodeURIComponent(event.pathParameters.handle);
     }
 
-    public async execute() {
+    public async execute(queueUrlPrefix: string) {
         var sqsClient = new AWS.SQS();
 
-        var queueUrl = "https://sqs.eu-west-1.amazonaws.com/170643467817/qimb-sub-" + this.subscriberId;
+        var queueUrl = queueUrlPrefix + "qimb-sub-" + this.subscriberId;
 
         console.log("Queue Url: " + queueUrl);
         console.log("Receipt Handle: " + this.receiptHandle);

@@ -10,10 +10,10 @@ export class ReceiveRequest {
         this.subscriberId = event.headers["X-Qimb-NodeId"];
     }
 
-    public async execute(): Promise<any> {
+    public async execute(sqsUrlPrefix: string): Promise<any> {
         var sqsClient = new AWS.SQS();
 
-        var queueUrl = "https://sqs.eu-west-1.amazonaws.com/170643467817/qimb-sub-" + this.subscriberId;
+        var queueUrl = sqsUrlPrefix + "qimb-sub-" + this.subscriberId;
 
         console.log("Queue Url: " + queueUrl);
 

@@ -1,10 +1,13 @@
 {
-  "name": "queueit.awsmessage-bus.framework.tests",
+  "name": "qimb.framework",
   "version": "0.0.0",
-  "description": "Queueit.AWSMessageBus.Framework.Tests",
+  "description": "QiMB",
   "main": "app.js",
   "author": {
     "name": "mala"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.4.5"
   },
   "devDependencies": {
     "@types/node": "^7.0.5"
