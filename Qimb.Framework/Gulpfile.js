@@ -8,7 +8,7 @@ var tsProject = ts.createProject('tsconfig.json', { rootDir: "src" });
 
 gulp.task('clean', function () {
     return del.sync([
-        './dist/**/*'
+        './../dist/**/*'
     ]);
 });
 
@@ -16,16 +16,16 @@ gulp.task('typescript-compile', function () {
     var tsResult = tsProject.src()
         .pipe(tsProject());
 
-    return tsResult.js.pipe(gulp.dest('dist'));
+    return tsResult.js.pipe(gulp.dest('./../dist'));
 });
 
 gulp.task('restore-modules', function () {
     return gulp.src(['./package.json'])
-        .pipe(gulp.dest('./dist/'))
+        .pipe(gulp.dest('./../dist/'))
         .pipe(install({ production: true }));
 });
 
 gulp.task('cloudformation-to-dist', function () {
     return gulp.src('./../CloudFormation/app.yaml')
-        .pipe(gulp.dest('./dist/'));
+        .pipe(gulp.dest('./../dist/'));
 });

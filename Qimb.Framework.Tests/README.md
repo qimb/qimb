@@ -1,3 +1,0 @@
-﻿# Queueit.AWSMessageBus.Framework.Tests
-
-
