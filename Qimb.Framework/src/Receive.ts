@@ -1,30 +1,27 @@
-﻿/// <reference path="lib/dts/aws-sdk.d.ts" />
-"use strict"
+﻿import * as AWS from 'aws-sdk';
 
-import * as AWS from 'aws-sdk';
+"use strict"
 
 export class ReceiveRequest {
     private subscriberId: string;
+    private sqsClient: AWS.SQS;
 
     constructor(event: any) {
         this.subscriberId = event.headers["X-Qimb-NodeId"];
+        this.sqsClient = new AWS.SQS();
     }
 
     public async execute(sqsUrlPrefix: string): Promise<any> {
-        var sqsClient = new AWS.SQS();
 
         var queueUrl = sqsUrlPrefix + "qimb-sub-" + this.subscriberId;
 
         console.log("Queue Url: " + queueUrl);
 
-        var receiveMessageResponse = await this.executeAwsRequestAsync<AWS.SQS.ReceiveMessageResult>((callback) =>
-            sqsClient.receiveMessage(
-                {
-                    QueueUrl: queueUrl,
-                    MaxNumberOfMessages: 10,
-                    VisibilityTimeout: 10
-                },
-                callback));
+        var receiveMessageResponse = await this.sqsClient.receiveMessage({
+            QueueUrl: queueUrl,
+            MaxNumberOfMessages: 10,
+            VisibilityTimeout: 10
+        }).promise();
 
         if (receiveMessageResponse.Messages) {
             var messages = new Array<any>();
@@ -49,21 +46,5 @@ export class ReceiveRequest {
             console.log("No messages");
             return [];
         }
-    }
-
-    private executeAwsRequestAsync<TResponse>(request: (callback: (err, data) => void) => void) {
-        console.log("start request ");
-
-        return new Promise<TResponse>(
-        (resolve, reject) => request((err, data) => {
-            if (!err) {
-                console.log("success");
-                resolve(data);
-            } else {
-                console.log("error: " + err);
-
-                reject(err);
-            }
-        }));
     }
 }

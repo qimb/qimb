@@ -1,0 +1,21 @@
+{
+  "name": "qimb.framework",
+  "version": "0.0.0",
+  "description": "QiMB",
+  "main": "app.js",
+  "author": {
+    "name": "mala"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.4.5"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "0.0.7",
+    "@types/node": "^7.0.5",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-install": "^0.6.0",
+    "gulp-typescript": "^3.1.5",
+    "typescript": "^2.2.1"
+  }
+}

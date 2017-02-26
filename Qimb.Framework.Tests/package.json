@@ -7,6 +7,7 @@
     "name": "mala"
   },
   "devDependencies": {
+    "@types/aws-lambda": "0.0.7",
     "@types/node": "^7.0.5"
   }
 }

@@ -1,0 +1,110 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: QiMB Framework
+Resources:
+  DeleteMessage:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: App.delete
+      Timeout: 30
+      Runtime: nodejs4.3
+      Environment:
+        Variables:
+          SQS_URL_PREFIX: !Sub "https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/"
+      Events:
+        PostResource:
+          Type: Api
+          Properties:
+            Path: /message/delete/{handle}
+            Method: delete
+      Role: !GetAtt LambdaRole.Arn
+  PublishDirectMessage:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: App.publishDirect
+      Timeout: 30
+      Runtime: nodejs4.3
+      Environment:
+        Variables:
+          SNS_ARN_PREFIX: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:"
+      Events:
+        PostResource:
+          Type: Api
+          Properties:
+            Path: /message/publish/node/{nodeid}/{messageid}
+            Method: put
+      Role: !GetAtt LambdaRole.Arn
+  PublishMessage:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: App.publish
+      Timeout: 30
+      Runtime: nodejs4.3
+      Environment:
+        Variables:
+          SNS_ARN_PREFIX: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:"
+      Events:
+        PostResource:
+          Type: Api
+          Properties:
+            Path: /message/publish/type/{messagetype}/{messageid}
+            Method: put
+      Role: !GetAtt LambdaRole.Arn
+  ReceiveMessage:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: App.receive
+      Timeout: 30
+      Runtime: nodejs4.3
+      Environment:
+        Variables:
+          SQS_URL_PREFIX: !Sub "https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/"
+      Events:
+        PostResource:
+          Type: Api
+          Properties:
+            Path: /message/receive
+            Method: get
+      Role: !GetAtt LambdaRole.Arn
+  SubscribeDirectMessage:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: App.subscribeDirect
+      Timeout: 30
+      Runtime: nodejs4.3
+      Events:
+        PostResource:
+          Type: Api
+          Properties:
+            Path: /message/subscribe/node
+            Method: put
+      Role: !GetAtt LambdaRole.Arn
+  SubscribeMessage:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: App.subscribe
+      Timeout: 30
+      Runtime: nodejs4.3
+      Events:
+        PostResource:
+          Type: Api
+          Properties:
+            Path: /message/subscribe/type/{messagetype}
+            Method: put
+      Role: !GetAtt LambdaRole.Arn
+
+  LambdaRole:
+    Type: "AWS::IAM::Role"
+    Properties: 
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          Effect: "Allow"
+          Principal: 
+            Service: "lambda.amazonaws.com"
+          Action: "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        - "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
+      RoleName: "LambdaRole"

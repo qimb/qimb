@@ -1,7 +1,6 @@
-﻿/// <reference path="lib/dts/aws-sdk.d.ts" />
-"use strict";
+﻿import * as AWS from 'aws-sdk';
 
-import * as AWS from 'aws-sdk';
+"use strict";
 
 interface IQueueDetails {
     queueUrl: string;
@@ -51,64 +50,35 @@ export class SubscribeDirectRequest {
     }
 
     private async subscribe(topicArn: string, endpoint: string, protocol: string): Promise<string> {
-        var subscribeResponse = await this.executeAwsRequestAsync<AWS.SNS.SubscribeResult>((callback) =>
-            this.snsClient.subscribe(
-                {
-                    TopicArn: topicArn,
-                    Protocol: protocol,
-                    Endpoint: endpoint
-                },
-                callback));
+        var subscribeResponse = await this.snsClient.subscribe({
+            TopicArn: topicArn,
+            Protocol: protocol,
+            Endpoint: endpoint
+        }).promise();
 
         return subscribeResponse.SubscriptionArn;
     }
 
     private async createTopic(topicName: string): Promise<string> {
-        var createTopicResponse = await this.executeAwsRequestAsync<AWS.SNS.CreateTopicResult>((callback) =>
-            this.snsClient.createTopic(
-                { Name: topicName },
-                callback));
+        var createTopicResponse = await this.snsClient.createTopic({
+             Name: topicName }).promise();
 
         return createTopicResponse.TopicArn;
     }
 
     private async createQueue(queueName: string): Promise<IQueueDetails> {
-        var createQueueResponse = await this.executeAwsRequestAsync<AWS.SQS.CreateQueueResult>((callback) =>
-            this.sqsClient.createQueue(
-                {
-                    QueueName: queueName,
-                    Attributes: {
-                        Policy:
-                            '{"Version": "2012-10-17","Id": "SNSSendMessage","Statement": [{"Sid": "Allow-SNS-SendMessage","Effect": "Allow","Principal": "*","Action": ["sqs:SendMessage","SQS:ReceiveMessage","SQS:DeleteMessage"],"Resource": "arn:aws:*:*:*"}]}'
-                    }
-                },
-                callback));
-        var queueAttributesResponse = await this
-            .executeAwsRequestAsync<AWS.SQS.GetQueueAttributesResult>((callback) => {
-                this.sqsClient.getQueueAttributes(
-                    {
-                        QueueUrl: createQueueResponse.QueueUrl,
-                        AttributeNames: ["All"]
-                    },
-                    callback);
-            });
+        var createQueueResponse = await this.sqsClient.createQueue({
+            QueueName: queueName,
+            Attributes: {
+                Policy:
+                    '{"Version": "2012-10-17","Id": "SNSSendMessage","Statement": [{"Sid": "Allow-SNS-SendMessage","Effect": "Allow","Principal": "*","Action": ["sqs:SendMessage","SQS:ReceiveMessage","SQS:DeleteMessage"],"Resource": "arn:aws:*:*:*"}]}'
+            }
+        }).promise();
+        var queueAttributesResponse = await this.sqsClient.getQueueAttributes({
+            QueueUrl: createQueueResponse.QueueUrl,
+            AttributeNames: ["All"]
+        }).promise();
 
         return { queueArn: queueAttributesResponse.Attributes["QueueArn"], queueUrl: createQueueResponse.QueueUrl };
-    }
-
-    private executeAwsRequestAsync<TResponse>(request: (callback: (err, data) => void) => void) {
-        console.log("start request ");
-
-        return new Promise<TResponse>(
-        (resolve, reject) => request((err, data) => {
-            if (!err) {
-                console.log("success");
-                resolve(data);
-            } else {
-                console.log("error: " + err);
-
-                reject(err);
-            }
-        }));
     }
 }

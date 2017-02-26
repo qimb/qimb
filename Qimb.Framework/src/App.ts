@@ -1,9 +1,4 @@
-﻿/// <reference path="lib/dts/lambda.d.ts" />
-/// <reference path="lib/dts/aws-sdk.d.ts" />
-
-import * as AWS from 'aws-sdk';
-import * as Lambda from 'aws-lambda';
-import * as PublishDirect from "./PublishDirect";
+﻿import * as PublishDirect from "./PublishDirect";
 import * as Publish from "./Publish";
 import * as Receive from "./Receive";
 import * as Delete from "./Delete";
@@ -19,7 +14,7 @@ var getSqsUrlPrefix = () => {
 var getSnsArnPrefix = () => {
     return process.env.SNS_ARN_PREFIX;
 };
-exports.delete = async (event: any, context: Lambda.Context, callback: Lambda.Callback) => {
+exports.delete = async (event: any, context: AWSLambda.Context, callback: AWSLambda.Callback) => {
     var request = new Delete.DeleteRequest(event);
 
     console.log("start");
@@ -32,13 +27,13 @@ exports.delete = async (event: any, context: Lambda.Context, callback: Lambda.Ca
     } catch (e) {
         console.log("Exception: " + e);
 
-        callback({ statusCode: 500 }, null);
+        callback(null, { statusCode: 500 });
     }
 
     console.log("end");
 }
 
-exports.subscribe = async (event: any, context: Lambda.Context, callback: Lambda.Callback) => {
+exports.subscribe = async (event: any, context: AWSLambda.Context, callback: AWSLambda.Callback) => {
     var request = new Subscribe.SubscribeRequest(event);
 
     console.log("start");
@@ -51,13 +46,13 @@ exports.subscribe = async (event: any, context: Lambda.Context, callback: Lambda
     } catch (e) {
         console.log("Exception: " + e);
 
-        callback({ statusCode: 500 }, null);
+        callback(null, { statusCode: 500 });
     }
 
     console.log("end");
 }
 
-exports.publishDirect = async (event: any, context: Lambda.Context, callback: Lambda.Callback) => {
+exports.publishDirect = async (event: any, context: AWSLambda.Context, callback: AWSLambda.Callback) => {
     var request = new PublishDirect.PublishDirectRequest(event);
 
     console.log("start");
@@ -71,13 +66,13 @@ exports.publishDirect = async (event: any, context: Lambda.Context, callback: La
     } catch (e) {
         console.log("Exception: " + e);
 
-        callback({ statusCode: 500 }, null);
+        callback(null, { statusCode: 500 });
     }
 
     console.log("end");
 }
 
-exports.publish = async (event: any, context: Lambda.Context, callback: Lambda.Callback) => {
+exports.publish = async (event: any, context: AWSLambda.Context, callback: AWSLambda.Callback) => {
     var request = new Publish.PublishRequest(event);
 
     console.log("start");
@@ -91,13 +86,13 @@ exports.publish = async (event: any, context: Lambda.Context, callback: Lambda.C
     } catch (e) {
         console.log("Exception: " + e);
 
-        callback({ statusCode: 500 }, null);
+        callback(null, { statusCode: 500 });
     }
 
     console.log("end");
 }
 
-exports.receive = async (event: any, context: Lambda.Context, callback: Lambda.Callback) => {
+exports.receive = async (event: any, context: AWSLambda.Context, callback: AWSLambda.Callback) => {
     var request = new Receive.ReceiveRequest(event);
 
     console.log("start");
@@ -110,13 +105,13 @@ exports.receive = async (event: any, context: Lambda.Context, callback: Lambda.C
     } catch (e) {
         console.log("Exception: " + e);
 
-        callback({ statusCode: 500 }, null);
+        callback(null, { statusCode: 500 });
     }
 
     console.log("end");
 }
 
-exports.subscribeDirect = async (event: any, context: Lambda.Context, callback: Lambda.Callback) => {
+exports.subscribeDirect = async (event: any, context: AWSLambda.Context, callback: AWSLambda.Callback) => {
     var request = new SubscribeDirect.SubscribeDirectRequest(event);
     console.log("start");
 
@@ -129,7 +124,7 @@ exports.subscribeDirect = async (event: any, context: Lambda.Context, callback: 
     } catch (e) {
         console.log("Exception: " + e);
 
-        callback({ statusCode: 500 }, null);
+        callback(null, { statusCode: 500 });
     }
 
     console.log("end");
