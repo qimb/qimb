@@ -11,7 +11,7 @@ QIMB is a zero management, platform agnostic message bus.
 * Guarantied message delivery
 * Push delivery (using http hooks)
 * Pull delivery
-* Scaleable
+* Scalable
 * Fault tolerant
 
 ## Delivery semantics
